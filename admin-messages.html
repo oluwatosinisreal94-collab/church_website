@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages - ECC Admin</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --sidebar-bg: #0f172a;
+            --bg-body: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --radius: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--bg-body);
+            color: var(--text-main);
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
+            height: 100vh;
+            background: var(--sidebar-bg);
+            color: white;
+            padding: 24px 16px;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            padding: 0 12px 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            margin-bottom: 20px;
+        }
+
+        .logo i {
+            color: var(--primary);
+            font-size: 1.3rem;
+        }
+
+        nav {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1;
+        }
+
+        nav a,
+        .logout {
+            color: #94a3b8;
+            text-decoration: none;
+            padding: 12px 14px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        nav a:hover,
+        nav a.active {
+            background: rgba(255, 255, 255, 0.06);
+            color: white;
+        }
+
+        nav a.active {
+            background: var(--primary);
+        }
+
+        .logout {
+            margin-top: auto;
+            color: #f87171;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 16px;
+        }
+
+        .logout:hover {
+            background: rgba(248, 113, 113, 0.1);
+        }
+
+        /* Main Workspace Layout */
+        .main {
+            margin-left: 260px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .topbar {
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .topbar h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .topbar p {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        .admin-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary-light);
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        /* Content Area */
+        .content {
+            padding: 40px;
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        .page-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .page-heading h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .page-heading p {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        .message-count {
+            background: var(--sidebar-bg);
+            color: white;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        /* Message Cards */
+        .messages-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .message-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+            
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .message-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+            transform: translateY(-2px);
+        }
+
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .sender {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .sender-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #e2e8f0;
+            color: #475569;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .sender h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 3px;
+            color: var(--text-main);
+        }
+
+        .sender span {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .status {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .status.unread {
+            background: #fff7ed;
+            color: #c2410c;
+        }
+
+        .status.read {
+            background: #ecfdf5;
+            color: #047857;
+        }
+
+        .message-details {
+            display: flex;
+            gap: 24px;
+            margin: 20px 0;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .message-details span {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .message-body {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 18px;
+            border: 1px solid var(--border);
+        }
+
+        .message-body p {
+            font-size: 0.95rem;
+            
+            color: #334155;
+            line-height: 1.7;
+        }
+
+        .message-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .message-actions button {
+            border: 1px solid var(--border);
+            background: white;
+            padding: 8px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #334155;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .message-actions button:hover {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+        }
+
+        .message-actions button.delete-btn:hover {
+            background: #fef2f2;
+            color: #dc2626;
+            border-color: #fecaca;
+        }
+
+        .read-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #047857;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        /* Empty State */
+        .empty-state {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            color: #cbd5e1;
+            margin-bottom: 15px;
+        }
+
+        .empty-state h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .empty-state p {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 900px) {
+            .sidebar {
+                width: 70px;
+                padding: 20px 10px;
+            }
+
+            .sidebar .logo span,
+            .sidebar nav a span,
+            .sidebar .logout span {
+                display: none;
+            }
+
+            .main {
+                margin-left: 70px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .sidebar {
+                display: none;
+            }
+
+            .main {
+                margin-left: 0;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .topbar {
+                padding: 20px;
+            }
+        }
+
+        .message-card.unread {
+            border-left: 4px solid #c2410c;
+            background: #fffdf9;
+        }
+
+        .message-card.read {
+            border-left: 4px solid #047857;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <div class="logo">
+            <i class="fa-solid fa-church"></i>
+            <span>ECC Admin</span>
+        </div>
+
+        <nav>
+            <a href="/admin">
+                <i class="fa-solid fa-chart-line"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="/admin/messages" class="active">
+                <i class="fa-solid fa-envelope"></i>
+                <span>Messages</span>
+            </a>
+
+            <a href="#">
+                <i class="fa-solid fa-location-dot"></i>
+                <span>Branches</span>
+            </a>
+
+            <a href="#">
+                <i class="fa-solid fa-gear"></i>
+                <span>Settings</span>
+            </a>
+        </nav>
+
+        <a href="/admin/logout" class="logout">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <span>Logout</span>
+        </a>
+    </div>
+
+    <!-- Main Workspace Container -->
+    <div class="main">
+
+        <header class="topbar">
+            <div>
+                <h1>Messages</h1>
+                <p>Manage contact submissions from the church website.</p>
+            </div>
+
+            <div class="admin-profile">
+                <div class="avatar">A</div>
+                <span>Admin</span>
+            </div>
+        </header>
+
+        <main class="content">
+
+            <div class="page-heading">
+                <div>
+                    <h2>Contact Messages</h2>
+                    <p>Recent visitor inquiries and member messages.</p>
+                </div>
+
+                <div class="message-count">
+                    {{len .Messages}} Messages
+                </div>
+            </div>
+
+            <div class="messages-container">
+
+                {{if .Messages}}
+                {{range .Messages}}
+                <div class="message-card {{.Status}}">
+                    <div class="message-header">
+                        <div class="sender">
+                            <div class="sender-avatar">
+                                {{printf "%.1s" .Name}}
+                            </div>
+                            <div>
+                                <h3>{{.Name}}</h3>
+                                <span>{{.Email}}</span>
+                            </div>
+                        </div>
+
+                        <span class="status {{.Status}}">
+                            {{.Status}}
+                        </span>
+                    </div>
+
+                    <div class="message-details">
+                        <span>
+                            <i class="fa-solid fa-phone"></i>
+                            {{.Phone}}
+                        </span>
+                        <span>
+                            <i class="fa-regular fa-clock"></i>
+                            {{.CreatedAt}}
+                        </span>
+                    </div>
+
+                    <div class="message-body">
+                        <p>{{.Message}}</p>
+                    </div>
+
+                    <div class="message-actions">
+                        {{if eq .Status "unread"}}
+                        <form action="/admin/messages/read" method="POST">
+                            <input type="hidden" name="id" value="{{.ID}}">
+                            <button type="submit">
+                                <i class="fa-regular fa-envelope-open"></i>
+                                Mark as Read
+                            </button>
+                        </form>
+                        {{else}}
+                        <div class="read-badge">
+                            <i class="fa-solid fa-check"></i>
+                            Read
+                        </div>
+                        {{end}}
+
+                        <form action="/admin/messages/delete" method="POST"
+                            onsubmit="return confirm('Delete this message?');">
+                            <input type="hidden" name="id" value="{{.ID}}">
+                            <button type="submit" class="delete-btn">
+                                <i class="fa-solid fa-trash"></i>
+                                Delete
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {{end}}
+                {{else}}
+                <!-- Graceful Empty State if slice is empty -->
+                <div class="empty-state">
+                    <i class="fa-regular fa-folder-open"></i>
+                    <h3>No messages found</h3>
+                    <p>Visitor inquiries will show up here once submitted.</p>
+                </div>
+                {{end}}
+
+            </div>
+
+        </main>
+    </div>
+
+</body>
+
+</html>
