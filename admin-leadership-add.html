@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Add Leader - ECC Admin</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #f8fafc;
+            color: #0f172a;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: #0f172a;
+            color: white;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+        }
+
+        .sidebar-brand {
+            padding: 24px;
+            font-size: 20px;
+            font-weight: 700;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .sidebar-brand i {
+            color: #2563eb;
+            margin-right: 10px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 20px 16px;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 6px;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: #94a3b8;
+            text-decoration: none;
+            border-radius: 8px;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background: #2563eb;
+            color: white;
+        }
+
+        .main {
+            margin-left: 260px;
+            padding: 40px;
+        }
+
+        .page-header {
+            margin-bottom: 30px;
+        }
+
+        .page-header h1 {
+            font-size: 28px;
+            margin-bottom: 6px;
+        }
+
+        .page-header p {
+            color: #64748b;
+        }
+
+        .form-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 750px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        }
+
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 13px 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .form-control:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .file-input {
+            padding: 10px;
+            background: #f8fafc;
+        }
+
+        .help-text {
+            margin-top: 7px;
+            color: #64748b;
+            font-size: 12px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-family: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e1;
+        }
+
+        @media (max-width: 700px) {
+
+            .sidebar {
+                display: none;
+            }
+
+            .main {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .form-card {
+                padding: 20px;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <div class="sidebar-brand">
+
+            <i class="fa-solid fa-church"></i>
+
+            ECC Admin
+
+        </div>
+
+        <ul class="sidebar-menu">
+
+            <li>
+                <a href="/admin">
+                    <i class="fa-solid fa-house"></i>
+                    Dashboard
+                </a>
+            </li>
+
+            <li>
+                <a href="/admin/messages">
+                    <i class="fa-solid fa-envelope"></i>
+                    Messages
+                </a>
+            </li>
+
+            <li>
+                <a href="/admin/branches">
+                    <i class="fa-solid fa-building-columns"></i>
+                    Branches
+                </a>
+            </li>
+
+            <li>
+                <a href="/admin/events">
+                    <i class="fa-solid fa-calendar-days"></i>
+                    Events
+                </a>
+            </li>
+
+            <li>
+                <a href="/admin/leadership" class="active">
+                    <i class="fa-solid fa-users"></i>
+                    Leadership
+                </a>
+            </li>
+
+            <li>
+                <a href="/admin/activity">
+                    <i class="fa-solid fa-clipboard-list"></i>
+                    Activity Log
+                </a>
+            </li>
+
+            <li>
+                <a href="/admin/settings">
+                    <i class="fa-solid fa-gear"></i>
+                    Settings
+                </a>
+            </li>
+
+        </ul>
+
+    </aside>
+
+
+    <!-- MAIN -->
+
+    <main class="main">
+
+        <div class="page-header">
+
+            <h1>Add Church Leader</h1>
+
+            <p>
+                Add a prophet, prophetess or pastor to the church leadership.
+            </p>
+
+        </div>
+
+
+        <div class="form-card">
+
+            <form
+                action="/admin/leadership/add"
+                method="POST"
+                enctype="multipart/form-data">
+
+
+                <!-- NAME -->
+
+                <div class="form-group">
+
+                    <label for="name">
+                        Full Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        class="form-control"
+                        placeholder="Enter leader's full name"
+                        required>
+
+                </div>
+
+
+                <!-- POSITION -->
+
+                <div class="form-group">
+
+                    <label for="position">
+                        Position
+                    </label>
+
+                    <select
+                        id="position"
+                        name="position"
+                        class="form-control"
+                        required>
+
+                        <option value="">
+                            Select position
+                        </option>
+
+                        <option value="Primate">
+                            Primate
+                        </option>
+
+                        <option value="Reverend Mother">
+                            Reverend Mother
+                        </option>
+
+                        <option value="Senior Prophet">
+                            Senior Prophet
+                        </option>
+
+                        <option value="Prophet">
+                            Prophet
+                        </option>
+
+                        <option value="Prophetess">
+                            Prophetess
+                        </option>
+
+                        <option value="Pastor">
+                            Pastor
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- BRANCH -->
+
+                <div class="form-group">
+
+                    <label for="branch">
+                        Branch
+                    </label>
+
+                    <!-- <input
+                        type="text"
+                        id="branch"
+                        name="branch"
+                        class="form-control"
+                        placeholder="e.g. Headquarters Mushin"
+                        required> -->
+
+                        <select name="branch" required>
+                            <option value="">Select a Branch</option>
+                            {{range .Branches}}
+                            <option value="{{.Name}}">
+                                {{.Name}}
+                            </option>
+                            {{end}}
+                        </select>
+
+                </div>
+
+
+                <!-- PHOTO -->
+
+                <div class="form-group">
+
+                    <label for="image">
+                        Leader Photo
+                    </label>
+
+                    <input
+                        type="file"
+                        id="image"
+                        name="image"
+                        class="form-control file-input"
+                        accept="image/*">
+
+                    <div class="help-text">
+                        Upload a clear photo of the church leader.
+                    </div>
+
+                </div>
+
+
+                <!-- BUTTONS -->
+
+                <div class="form-actions">
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary">
+
+                        <i class="fa-solid fa-user-plus"></i>
+
+                        Add Leader
+
+                    </button>
+
+                    <a
+                        href="/admin/leadership"
+                        class="btn btn-secondary">
+
+                        Cancel
+
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </main>
+
+</body>
+
+</html>

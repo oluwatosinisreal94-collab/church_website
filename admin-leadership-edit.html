@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Church Leader - ECC Admin</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #f8fafc;
+            color: #0f172a;
+            line-height: 1.5;
+        }
+
+        .main {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #64748b;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 20px;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: #2563eb;
+        }
+
+        .page-header {
+            margin-bottom: 24px;
+        }
+
+        .page-header h1 {
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: #0f172a;
+        }
+
+        .page-header p {
+            color: #64748b;
+            font-size: 15px;
+        }
+
+        .form-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -2px rgba(0, 0, 0, 0.02);
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            color: #334155;
+        }
+
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 14px;
+            background: #fff;
+            color: #0f172a;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input[type="text"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .image-preview-container {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 16px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+        }
+
+        .current-image {
+            width: 90px;
+            height: 90px;
+            object-fit: cover;
+            border-radius: 8px;
+            background: #e2e8f0;
+            border: 1px solid #cbd5e1;
+        }
+
+        .image-info p {
+            font-size: 14px;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 4px;
+        }
+
+        .image-info span {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+
+        input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            background: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 14px;
+            cursor: pointer;
+            color: #475569;
+        }
+
+        input[type="file"]::file-selector-button {
+            padding: 8px 14px;
+            background: #e2e8f0;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            color: #334155;
+            cursor: pointer;
+            margin-right: 12px;
+            transition: background 0.2s;
+        }
+
+        input[type="file"]::file-selector-button:hover {
+            background: #cbd5e1;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 32px;
+            padding-top: 20px;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        .save-btn {
+            background: #2563eb;
+            color: white;
+            flex: 1;
+        }
+
+        .save-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .cancel-btn {
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid #e2e8f0;
+        }
+
+        .cancel-btn:hover {
+            background: #e2e8f0;
+        }
+
+        @media (max-width: 640px) {
+            .main {
+                padding: 20px 15px;
+            }
+            .buttons {
+                flex-direction: column-reverse;
+            }
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="main">
+
+        <a href="/admin/leadership" class="back-link">
+            <i class="fa-solid fa-arrow-left"></i> Back to Leadership
+        </a>
+
+        <div class="page-header">
+            <h1>Edit Church Leader</h1>
+            <p>Update the leader's information and profile details below.</p>
+        </div>
+
+        <div class="form-card">
+
+            <form action="/admin/leadership/edit/{{.ID}}" method="POST" enctype="multipart/form-data">
+
+                <div class="form-group">
+                    <label><i class="fa-solid fa-user" style="color: #2563eb; margin-right: 6px;"></i> Full Name</label>
+                    <input type="text" name="name" value="{{.Name}}" placeholder="e.g. Prophet John Doe" required>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fa-solid fa-id-badge" style="color: #2563eb; margin-right: 6px;"></i> Position</label>
+                    <select name="position" required>
+                        <option value="Primate" {{if eq .Position "Primate"}}selected{{end}}>Primate</option>
+                        <option value="Reverend Mother" {{if eq .Position "Reverend Mother"}}selected{{end}}>Reverend Mother</option>
+                        <option value="Senior Prophet" {{if eq .Position "Senior Prophet"}}selected{{end}}>Senior Prophet</option>
+                        <option value="Prophet" {{if eq .Position "Prophet"}}selected{{end}}>Prophet</option>
+                        <option value="Prophetess" {{if eq .Position "Prophetess"}}selected{{end}}>Prophetess</option>
+                        <option value="Pastor" {{if eq .Position "Pastor"}}selected{{end}}>Pastor</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fa-solid fa-location-dot" style="color: #2563eb; margin-right: 6px;"></i> Branch</label>
+                    <input type="text" name="branch" value="{{.Branch}}" placeholder="e.g. Headquarters Branch" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Current Photo</label>
+                    {{if .Image}}
+                    <div class="image-preview-container">
+                        <img src="/images/{{.Image}}" alt="{{.Name}}" class="current-image">
+                        <div class="image-info">
+                            <p>{{.Image}}</p>
+                            <span>Active leader photo profile</span>
+                        </div>
+                    </div>
+                    {{else}}
+                    <div class="image-preview-container" style="justify-content: center; color: #64748b;">
+                        <i class="fa-solid fa-image" style="font-size: 24px; margin-right: 8px;"></i> No image uploaded yet.
+                    </div>
+                    {{end}}
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fa-solid fa-upload" style="color: #2563eb; margin-right: 6px;"></i> Replace Image (Optional)</label>
+                    <input type="file" name="image" accept="image/*">
+                </div>
+
+                <div class="buttons">
+                    <a href="/admin/leadership" class="btn cancel-btn">
+                        <i class="fa-solid fa-xmark"></i> Cancel
+                    </a>
+                    <button type="submit" class="btn save-btn">
+                        <i class="fa-solid fa-floppy-disk"></i> Save Changes
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+
+    </main>
+
+</body>
+
+</html>

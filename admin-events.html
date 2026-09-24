@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ECC Events - Admin Dashboard</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --sidebar-width: 260px;
+            --bg-body: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --radius: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--bg-body);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+
+        .sidebar {
+            width: var(--sidebar-width);
+            background: #0f172a;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+        }
+
+        .sidebar-brand {
+            padding: 24px;
+            font-size: 1.25rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .sidebar-brand i {
+            color: var(--primary);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 20px 16px;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: #94a3b8;
+            text-decoration: none;
+            font-weight: 500;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            color: #ffffff;
+            background: var(--primary);
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 20px 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: #f87171;
+            text-decoration: none;
+            border-radius: 8px;
+        }
+
+        .logout-btn:hover {
+            background: rgba(248, 113, 113, 0.1);
+        }
+
+        /* Main */
+
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+        }
+
+        .topbar {
+            height: 72px;
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 0 40px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .notification-bell {
+            background: var(--bg-body);
+            border: 1px solid var(--border);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-light);
+            color: var(--primary);
+            font-weight: 700;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            padding: 40px;
+            max-width: 1400px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-header h1 {
+            font-size: 1.85rem;
+            margin-bottom: 6px;
+        }
+
+        .page-header p {
+            color: var(--text-muted);
+        }
+
+        .add-btn {
+            background: var(--primary);
+            color: white;
+            padding: 12px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .add-btn:hover {
+            background: #1d4ed8;
+        }
+
+        /* Event Cards */
+
+        .event-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+        .event-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .event-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .event-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .event-description {
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .event-info {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .event-info div {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .event-info i {
+            color: var(--primary);
+            width: 18px;
+            margin-top: 3px;
+        }
+
+        .event-footer {
+            display: flex;
+            gap: 10px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .btn-sm {
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-outline {
+            border: 1px solid var(--border);
+            color: var(--text-main);
+        }
+
+        .btn-outline:hover {
+            background: var(--bg-body);
+        }
+
+        .btn-danger-soft {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        .btn-danger-soft:hover {
+            background: #fee2e2;
+        }
+
+        .empty-state {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 60px 20px;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 40px;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 220px;
+            }
+
+            .main-content {
+                margin-left: 220px;
+            }
+
+            .container {
+                padding: 25px;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <aside class="sidebar">
+
+        <div class="sidebar-brand">
+            <i class="fa-solid fa-church"></i>
+            <span>ECC Admin</span>
+        </div>
+
+        <ul class="sidebar-menu">
+
+            <li>
+                <a href="/admin">
+                    <i class="fa-solid fa-house"></i>
+                    Dashboard
+                </a>
+            </li>
+
+            <li>
+                <a href="/admin/messages">
+                    <i class="fa-solid fa-envelope"></i>
+                    Messages
+                </a>
+            </li>
+
+            <li>
+                <a href="/admin/branches">
+                    <i class="fa-solid fa-building-columns"></i>
+                    Branches
+                </a>
+            </li>
+
+            <li>
+                <a href="/admin/events" class="active">
+                    <i class="fa-solid fa-calendar-days"></i>
+                    Events
+                </a>
+            </li>
+
+            <li>
+                <a href="/admin/settings">
+                    <i class="fa-solid fa-gear"></i>
+                    Settings
+                </a>
+            </li>
+
+        </ul>
+
+        <div class="sidebar-footer">
+            <a href="/admin/logout" class="logout-btn">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                Logout
+            </a>
+        </div>
+
+    </aside>
+
+
+    <div class="main-content">
+
+        <header class="topbar">
+
+            <div class="user-profile">
+
+                <div class="notification-bell">
+                    <i class="fa-regular fa-bell"></i>
+                </div>
+
+                <div class="avatar">
+                    A
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <main class="container">
+
+            <div class="page-header">
+
+                <div>
+                    <h1>Events</h1>
+                    <p>Manage church events and programs</p>
+                </div>
+
+                <a href="/admin/events/add" class="add-btn">
+                    <i class="fa-solid fa-plus"></i>
+                    Add Event
+                </a>
+
+            </div>
+
+
+            {{if .Events}}
+
+            <section class="event-grid">
+
+                {{range .Events}}
+
+                <div class="event-card">
+
+                    <div class="event-title">
+                        {{.Title}}
+                    </div>
+
+                    <div class="event-description">
+                        {{.Description}}
+                    </div>
+
+                    <div class="event-info">
+
+                        <div>
+                            <i class="fa-solid fa-calendar"></i>
+                            <span>{{.EventDate}}</span>
+                        </div>
+
+                        <div>
+                            <i class="fa-solid fa-clock"></i>
+                            <span>{{.EventTime}}</span>
+                        </div>
+
+                        <div>
+                            <i class="fa-solid fa-location-dot"></i>
+                            <span>{{.Location}}</span>
+                        </div>
+
+                    </div>
+
+                    <div class="event-footer">
+
+                        <a href="/admin/events/edit/{{.ID}}" class="btn-sm btn-outline">
+                            <i class="fa-solid fa-pen"></i>
+                            Edit
+                        </a>
+                        
+
+                        <a href="/admin/events/delete/{{.ID}}"
+                           class="btn-sm btn-danger-soft"
+                           onclick="return confirm('Are you sure you want to delete this event?');">
+                            <i class="fa-solid fa-trash"></i>
+                            Delete
+                        </a>
+
+                    </div>
+
+                </div>
+
+                {{end}}
+
+            </section>
+
+            {{else}}
+
+            <div class="empty-state">
+
+                <i class="fa-solid fa-calendar-days"></i>
+
+                <h3>No events yet</h3>
+
+                <p>Add your first church event or program.</p>
+
+            </div>
+
+            {{end}}
+
+        </main>
+
+    </div>
+
+</body>
+
+</html>

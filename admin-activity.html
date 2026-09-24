@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Activity Log - ECC Admin</title>
+
+    <link rel="stylesheet" href="/style.css">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            color: #1f2937;
+        }
+
+        .admin-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+
+        .sidebar {
+            width: 250px;
+            background: #111827;
+            color: white;
+            padding: 25px 0;
+            flex-shrink: 0;
+        }
+
+        .sidebar-logo {
+            text-align: center;
+            padding: 0 20px 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-logo h2 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .sidebar-logo p {
+            margin: 6px 0 0;
+            color: #9ca3af;
+            font-size: 13px;
+        }
+
+        .sidebar-menu {
+            padding: 25px 15px;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 13px 15px;
+            margin-bottom: 8px;
+            color: #d1d5db;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background: #2563eb;
+            color: white;
+        }
+
+        .logout-link {
+            margin-top: 30px !important;
+            color: #fca5a5 !important;
+        }
+
+        .logout-link:hover {
+            background: #dc2626 !important;
+            color: white !important;
+        }
+
+        /* MAIN */
+
+        .main-content {
+            flex: 1;
+            padding: 35px;
+            overflow-x: auto;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        .page-header p {
+            margin: 7px 0 0;
+            color: #6b7280;
+        }
+
+        .activity-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+        }
+
+        .activity-card h2 {
+            margin-top: 0;
+            margin-bottom: 25px;
+            font-size: 20px;
+        }
+
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            padding: 18px 5px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: #eff6ff;
+            color: #2563eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .activity-details {
+            flex: 1;
+        }
+
+        .activity-details h3 {
+            margin: 0 0 5px;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .activity-details span {
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: #6b7280;
+        }
+
+        .empty-state div {
+            font-size: 45px;
+            margin-bottom: 15px;
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 800px) {
+
+            .sidebar {
+                width: 210px;
+            }
+
+            .main-content {
+                padding: 25px 18px;
+            }
+        }
+
+        @media (max-width: 600px) {
+
+            .admin-layout {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                padding: 15px 0;
+            }
+
+            .sidebar-logo {
+                padding-bottom: 15px;
+            }
+
+            .sidebar-menu {
+                display: flex;
+                overflow-x: auto;
+                padding: 15px;
+                gap: 8px;
+            }
+
+            .sidebar-menu a {
+                white-space: nowrap;
+                margin-bottom: 0;
+            }
+
+            .logout-link {
+                margin-top: 0 !important;
+            }
+
+            .page-header {
+                display: block;
+            }
+
+            .page-header h1 {
+                font-size: 24px;
+            }
+
+            .activity-card {
+                padding: 18px;
+            }
+        }
+
+        .activity-login .activity-icon {
+    background: #ecfdf5;
+    color: #059669;
+}
+
+.activity-logout .activity-icon {
+    background: #f3f4f6;
+    color: #6b7280;
+}
+
+.activity-add .activity-icon {
+    background: #ecfdf5;
+    color: #059669;
+}
+
+.activity-edit .activity-icon {
+    background: #eff6ff;
+    color: #2563eb;
+}
+
+.activity-delete .activity-icon {
+    background: #fef2f2;
+    color: #dc2626;
+}
+
+    </style>
+</head>
+
+<body>
+
+    <div class="admin-layout">
+
+        <!-- SIDEBAR -->
+
+        <aside class="sidebar">
+
+            <div class="sidebar-logo">
+                <h2>ECC Admin</h2>
+                <p>Church Management</p>
+            </div>
+
+            <nav class="sidebar-menu">
+
+                <a href="/admin">
+                    📊 Dashboard
+                </a>
+
+                <a href="/admin/messages">
+                    💬 Messages
+                </a>
+
+                <a href="/admin/branches">
+                    🏛️ Branches
+                </a>
+
+                <a href="/admin/events">
+                    📅 Events
+                </a>
+
+                <a href="/admin/activity" class="active">
+                    📋 Activity Log
+                </a>
+
+                <a href="/admin/settings">
+                    ⚙️ Settings
+                </a>
+
+                <a href="/admin/logout" class="logout-link">
+                    🚪 Logout
+                </a>
+
+            </nav>
+
+        </aside>
+
+
+        <!-- MAIN CONTENT -->
+
+        <main class="main-content">
+
+            <div class="page-header">
+
+                <div>
+                    <h1>Activity Log</h1>
+
+                    <p>
+                        Track important actions performed in the administration area.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="activity-card">
+
+                <h2>Recent Activity</h2>
+
+                <div class="activity-list">
+
+                    {{if .Activities}}
+
+                    {{range .Activities}}
+
+
+
+                    <div class="activity-item
+    {{if eq .Action " Admin logged in"}}activity-login {{else if eq .Action "Admin logged out" }}activity-logout {{else
+                        if eq .Action "Deleted a branch" }}activity-delete {{else if eq .Action "Deleted an event"
+                        }}activity-delete {{else if eq .Action "Deleted a message" }}activity-delete {{else if eq
+                        .Action "Edited a branch" }}activity-edit {{else if eq .Action "Edited an event" }}activity-edit
+                        {{else}}activity-add {{end}}">
+
+
+
+                        <div class="activity-icon">
+
+                            {{if eq .Action "Admin logged in"}}
+                            🔐
+
+                            {{else if eq .Action "Admin logged out"}}
+                            🚪
+
+                            {{else if eq .Action "Added a new branch"}}
+                            🏛️
+
+                            {{else if eq .Action "Edited a branch"}}
+                            ✏️
+
+                            {{else if eq .Action "Deleted a branch"}}
+                            🗑️
+
+                            {{else if eq .Action "Added a new event"}}
+                            📅
+
+                            {{else if eq .Action "Edited an event"}}
+                            ✏️
+
+                            {{else if eq .Action "Deleted an event"}}
+                            🗑️
+
+                            {{else if eq .Action "Marked a message as read"}}
+                            📖
+
+                            {{else if eq .Action "Deleted a message"}}
+                            🗑️
+
+                            {{else}}
+                            📋
+                            {{end}}
+
+                        </div>
+
+                        <div class="activity-details">
+
+                            <h3>{{.Action}}</h3>
+
+                            <span>
+                                {{.CreatedAt}}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    {{end}}
+
+                    {{else}}
+
+                    <div class="empty-state">
+
+                        <div>📭</div>
+
+                        <h3>No activity yet</h3>
+
+                        <p>
+                            Administrator activity will appear here.
+                        </p>
+
+                    </div>
+
+                    {{end}}
+
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</body>
+
+</html>

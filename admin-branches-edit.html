@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Edit Branch - ECC Admin</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f1f5f9;
+            color: #1e293b;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+
+        .sidebar {
+            width: 250px;
+            background: #0f172a;
+            color: white;
+            padding: 25px 15px;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .logo i {
+            font-size: 35px;
+            color: #38bdf8;
+            margin-bottom: 10px;
+        }
+
+        .logo h2 {
+            font-size: 18px;
+        }
+
+        .logo p {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 5px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar li {
+            margin-bottom: 8px;
+        }
+
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 13px 15px;
+            color: #cbd5e1;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background: #1e293b;
+            color: white;
+        }
+
+        .sidebar i {
+            width: 20px;
+        }
+
+        /* MAIN */
+
+        .main {
+            margin-left: 250px;
+            width: calc(100% - 250px);
+        }
+
+        .topbar {
+            height: 70px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 35px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .topbar h3 {
+            font-size: 20px;
+        }
+
+        .admin-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .admin-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #2563eb;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* CONTENT */
+
+        .content {
+            padding: 35px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .page-header h1 {
+            font-size: 28px;
+            margin-bottom: 6px;
+        }
+
+        .page-header p {
+            color: #64748b;
+        }
+
+        .back-btn {
+            text-decoration: none;
+            background: white;
+            color: #334155;
+            padding: 11px 17px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-btn:hover {
+            background: #f8fafc;
+        }
+
+        /* FORM CARD */
+
+        .form-card {
+            background: white;
+            max-width: 850px;
+            border-radius: 14px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(15, 23, 42, 0.06);
+        }
+
+        .form-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 25px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .form-title-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            background: #eff6ff;
+            color: #2563eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .form-title h2 {
+            font-size: 20px;
+        }
+
+        .form-title p {
+            color: #64748b;
+            font-size: 13px;
+            margin-top: 3px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 22px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #334155;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            outline: none;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .btn {
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-cancel {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .btn-save {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-save:hover {
+            background: #1d4ed8;
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 768px) {
+
+            .sidebar {
+                width: 210px;
+            }
+
+            .main {
+                margin-left: 210px;
+                width: calc(100% - 210px);
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full {
+                grid-column: auto;
+            }
+
+            .page-header {
+                align-items: flex-start;
+                gap: 15px;
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 600px) {
+
+            .sidebar {
+                display: none;
+            }
+
+            .main {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .topbar {
+                padding: 0 18px;
+            }
+
+            .content {
+                padding: 18px;
+            }
+
+            .form-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="layout">
+
+        <!-- SIDEBAR -->
+
+        <aside class="sidebar">
+
+            <div class="logo">
+                <i class="fa-solid fa-church"></i>
+                <h2>ECC Admin</h2>
+                <p>Church Management</p>
+            </div>
+
+            <ul>
+
+                <li>
+                    <a href="/admin/dashboard">
+                        <i class="fa-solid fa-chart-line"></i>
+                        Dashboard
+                    </a>
+                </li>
+
+                <li>
+                    <a href="/admin/messages">
+                        <i class="fa-solid fa-envelope"></i>
+                        Messages
+                    </a>
+                </li>
+
+                <li>
+                    <a href="/admin/branches" class="active">
+                        <i class="fa-solid fa-building-columns"></i>
+                        Branches
+                    </a>
+                </li>
+
+                <li>
+                    <a href="/">
+                        <i class="fa-solid fa-globe"></i>
+                        View Website
+                    </a>
+                </li>
+
+            </ul>
+
+        </aside>
+
+        <!-- MAIN -->
+
+        <main class="main">
+
+            <header class="topbar">
+
+                <h3>Edit Branch</h3>
+
+                <div class="admin-user">
+                    <span>Administrator</span>
+
+                    <div class="admin-avatar">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                </div>
+
+            </header>
+
+            <section class="content">
+
+                <div class="page-header">
+
+                    <div>
+                        <h1>Edit Branch</h1>
+                        <p>Update the information for this church branch.</p>
+                    </div>
+
+                    <a href="/admin/branches" class="back-btn">
+                        <i class="fa-solid fa-arrow-left"></i>
+                        Back to Branches
+                    </a>
+
+                </div>
+
+                <div class="form-card">
+
+                    <div class="form-title">
+
+                        <div class="form-title-icon">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </div>
+
+                        <div>
+                            <h2>Branch Information</h2>
+                            <p>Make your changes and save them.</p>
+                        </div>
+
+                    </div>
+
+                   <form action="/admin/branches/edit/{{.ID}}" method="POST" enctype="multipart/form-data">
+
+                        <div class="form-grid">
+
+                            <div class="form-group">
+                                <label>Branch Name</label>
+                                <input type="text" name="name" value="{{.Name}}" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Pastor</label>
+                                <input type="text" name="pastor" value="{{.Pastor}}">
+                            </div>
+
+                            <div class="form-group full">
+                                <label>Address</label>
+                                <input type="text" name="address" value="{{.Address}}" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Phone Number</label>
+                                <input type="text" name="phone" value="{{.Phone}}">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Building Image</label>
+                                <input type="file" name="image" accept="image/*">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Pastor Image</label>
+                                <input type="file" name="pastor_image" accept="image/*">
+                            </div>
+
+                        </div>
+
+                        <div class="form-actions">
+
+                            <a href="/admin/branches" class="btn btn-cancel">
+                                Cancel
+                            </a>
+
+                            <button type="submit" class="btn btn-save">
+                                <i class="fa-solid fa-floppy-disk"></i>
+                                Save Changes
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+</body>
+
+</html>

@@ -551,11 +551,67 @@
             </div>
 
 
+
             <div class="branches-layout">
 
-                <!-- LAGOS -->
-
                 <div class="branch-group">
+
+                    <div class="branch-state">
+                        <span>OUR</span>
+                        <h3>Church Branches</h3>
+                    </div>
+
+                    {{range .Branches}}
+
+                    
+                    <div class="branch-card">
+
+                        <img src="/images/{{.Image}}" alt="{{.Name}}" class="branch-image">
+
+                        <div class="branch-number">
+                            {{.Number}}
+                        </div>
+
+                        <div class="branch-info">
+
+                            <h4>{{.Name}}</h4>
+
+                            <p>
+                                {{.Address}}
+                            </p>
+
+                            {{if .Pastor}}
+                            <div class="pastor-info">
+
+                                <img src="/images/{{.PastorImage}}" alt="{{.Pastor}}" class="pastor-image">
+
+                                <div>
+                                    <p>
+                                        <strong>Pastor:</strong> {{.Pastor}}
+                                    </p>
+                                </div>
+
+                            </div>
+                            {{end}}
+
+                            {{if .Phone}}
+                            <p>
+                                <strong>Phone:</strong> {{.Phone}}
+                            </p>
+                            {{end}}
+
+                        </div>
+
+                    </div>
+                                        {{end}}
+
+
+
+                    <!-- <div class="branches-layout"> -->
+
+                    <!-- LAGOS -->
+
+                    <!-- <div class="branch-group">
 
                     <div class="branch-state">
                         <span>01</span>
@@ -610,12 +666,12 @@
 
                     </div>
 
-                </div>
+                </div> -->
 
 
-                <!-- OGUN -->
+                    <!-- OGUN -->
 
-                <div class="branch-group">
+                    <!-- <div class="branch-group">
 
                     <div class="branch-state">
                         <span>02</span>
@@ -673,11 +729,77 @@
 
                 </div>
 
+            </div> -->
+
+                </div>
+
+    </section>
+
+
+
+    <!-- Leadership Section -->
+<section class="leadership-section" id="leadership">
+
+    <div class="section-header">
+
+        <span class="section-label">Our Leadership</span>
+
+        <h2>Meet Our Church Leaders</h2>
+
+        <p>
+            Meet the prophets, prophetesses and pastors serving
+            Ebenezer Christ Church of the Lord.
+        </p>
+
+    </div>
+
+    {{if .Leaders}}
+
+    <div class="leadership-grid">
+
+        {{range .Leaders}}
+
+        <div class="leadership-card">
+
+            {{if .Image}}
+
+            <img
+                src="/images/{{.Image}}"
+                alt="{{.Name}}"
+                class="leadership-image">
+
+            {{else}}
+
+            <div class="leadership-image leadership-placeholder">
+                <i class="fa-solid fa-user"></i>
+            </div>
+
+            {{end}}
+
+            <div class="leadership-content">
+
+                <h3>{{.Name}}</h3>
+
+                <p class="leadership-position">
+                    {{.Position}}
+                </p>
+
+                <p class="leadership-branch">
+                    <i class="fa-solid fa-location-dot"></i>
+                    {{.Branch}}
+                </p>
+
             </div>
 
         </div>
 
-    </section>
+        {{end}}
+
+    </div>
+
+    {{end}}
+
+</section>
 
 
     <!-- ================= EVENTS ================= -->
@@ -700,7 +822,7 @@
             </div>
 
 
-            <div class="events-grid">
+            <!-- <div class="events-grid">
 
                 <article class="event-card">
 
@@ -762,11 +884,51 @@
 
                 </article>
 
+            </div> -->
+
+
+
+            <div class="events-grid">
+
+                {{range .Events}}
+
+                <article class="event-card">
+
+                    <div class="event-date">
+                        <strong>{{.EventDate}}</strong>
+                        <span>{{.EventTime}}</span>
+                    </div>
+
+                    <div>
+                        <span class="event-type">CHURCH EVENT</span>
+
+                        <h3>{{.Title}}</h3>
+
+                        <p>
+                            {{.Description}}
+                        </p>
+
+                        <p>
+                            <strong>Location:</strong> {{.Location}}
+                        </p>
+                    </div>
+
+                </article>
+
+                {{else}}
+
+                <p>No upcoming events at the moment.</p>
+
+                {{end}}
+
             </div>
+
+
 
         </div>
 
     </section>
+    
 
 
     <!-- ================= SERMONS ================= -->
@@ -1043,8 +1205,8 @@
                         <label for="email">Email Address</label>
                         <input type="email" id="email" name="email" placeholder="Enter your email" required>
                     </div>
-                    
-                     <div class="form-group">
+
+                    <div class="form-group">
                         <label for="email">Phone Number</label>
                         <input type="phone" id="phone" name="phone" placeholder="Enter your Phone Number" required>
                     </div>

@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Add Event - ECC Admin</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --sidebar-width: 260px;
+            --bg-body: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --radius: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--bg-body);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            background: #0f172a;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+        }
+
+        .sidebar-brand {
+            padding: 24px;
+            font-size: 1.25rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .sidebar-brand i {
+            color: var(--primary);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 20px 16px;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: #94a3b8;
+            text-decoration: none;
+            font-weight: 500;
+            border-radius: 8px;
+            margin-bottom: 6px;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            color: white;
+            background: var(--primary);
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 20px 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: #f87171;
+            text-decoration: none;
+            border-radius: 8px;
+        }
+
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+        }
+
+        .topbar {
+            height: 72px;
+            background: white;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 0 40px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .notification-bell {
+            background: var(--bg-body);
+            border: 1px solid var(--border);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-light);
+            color: var(--primary);
+            font-weight: 700;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            padding: 40px;
+            max-width: 1000px;
+        }
+
+        .page-header {
+            margin-bottom: 30px;
+        }
+
+        .page-header h1 {
+            font-size: 1.85rem;
+            margin-bottom: 6px;
+        }
+
+        .page-header p {
+            color: var(--text-muted);
+        }
+
+        .form-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: var(--primary);
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-cancel {
+            background: #f1f5f9;
+            color: var(--text-main);
+            padding: 12px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+
+    <aside class="sidebar">
+
+        <div class="sidebar-brand">
+            <i class="fa-solid fa-church"></i>
+            <span>ECC Admin</span>
+        </div>
+
+        <ul class="sidebar-menu">
+
+            <li>
+                <a href="/admin">
+                    <i class="fa-solid fa-house"></i>
+                    Dashboard
+                </a>
+            </li>
+
+            <li>
+                <a href="/admin/messages">
+                    <i class="fa-solid fa-envelope"></i>
+                    Messages
+                </a>
+            </li>
+
+            <li>
+                <a href="/admin/branches">
+                    <i class="fa-solid fa-building-columns"></i>
+                    Branches
+                </a>
+            </li>
+
+            <li>
+                <a href="/admin/events" class="active">
+                    <i class="fa-solid fa-calendar-days"></i>
+                    Events
+                </a>
+            </li>
+
+            <li>
+                <a href="#">
+                    <i class="fa-solid fa-gear"></i>
+                    Settings
+                </a>
+            </li>
+
+        </ul>
+
+        <div class="sidebar-footer">
+            <a href="/admin/logout" class="logout-btn">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                Logout
+            </a>
+        </div>
+
+    </aside>
+
+
+    <div class="main-content">
+
+        <header class="topbar">
+
+            <div class="user-profile">
+
+                <div class="notification-bell">
+                    <i class="fa-regular fa-bell"></i>
+                </div>
+
+                <div class="avatar">
+                    A
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <main class="container">
+
+            <div class="page-header">
+
+                <h1>Add Event</h1>
+
+                <p>Create a new church event or program.</p>
+
+            </div>
+
+
+            <div class="form-card">
+
+                <form method="POST" action="/admin/events/add">
+
+                    <div class="form-group">
+
+                        <label for="title">Event Title</label>
+
+                        <input
+                            type="text"
+                            id="title"
+                            name="title"
+                            placeholder="e.g. Sunday Thanksgiving Service"
+                            required>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="description">Description</label>
+
+                        <textarea
+                            id="description"
+                            name="description"
+                            placeholder="Enter details about the event..."
+                            required></textarea>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="event_date">Event Date</label>
+
+                        <input
+                            type="date"
+                            id="event_date"
+                            name="event_date"
+                            required>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="event_time">Event Time</label>
+
+                        <input
+                            type="time"
+                            id="event_time"
+                            name="event_time"
+                            required>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="location">Location</label>
+
+                        <input
+                            type="text"
+                            id="location"
+                            name="location"
+                            placeholder="e.g. Church Headquarters"
+                            required>
+
+                    </div>
+
+
+                    <div class="form-actions">
+
+                        <button type="submit" class="btn-primary">
+                            <i class="fa-solid fa-plus"></i>
+                            Add Event
+                        </button>
+
+                        <a href="/admin/events" class="btn-cancel">
+                            Cancel
+                        </a>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</body>
+
+</html>
