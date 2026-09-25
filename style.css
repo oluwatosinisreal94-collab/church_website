@@ -679,13 +679,39 @@ a {
 .branch-card h4 {
     color: var(--navy);
     margin-bottom: 5px;
+    text-align: center;
+    width: 100%;
 }
 
 .branch-card p {
     color: var(--muted);
     font-size: 14px;
+    text-align: center;
+    width: 100%;
 }
 
+
+
+
+.pastor-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-top: 15px;
+}
+
+.pastor-image {
+    width: 45px;
+    height: 45px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-bottom: 8px;
+}
+
+.pastor-info p {
+    margin: 0;
+}
 
 
 /* ================= EVENTS ================= */
@@ -1470,16 +1496,19 @@ a {
 /* Branch Images */
 
 .branch-image {
-    width: 100%;
-    height: 220px;
-    object-fit: contain;
-    border-radius: 12px;
+    width: 180px;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 50%;
+    background: #f1f5f9;
     display: block;
-    margin-bottom: 20px;
+    margin: 30px auto 20px;
+    border: 5px solid #ffffff;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
 }
 
 
-.pastor-image {
+/* .pastor-image {
     width: 55px;
     height: 55px;
     object-fit: cover;
@@ -1487,8 +1516,17 @@ a {
     display: inline-block;
     vertical-align: middle;
     margin-right: 10px;
-}
+} */
 
+.pastor-image {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 50%;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 10px;
+}
 
 /* =========================
    CHURCH LEADERSHIP
@@ -1689,11 +1727,15 @@ a {
 }
 
 .leadership-image {
-    width: 100%;
-    height: 250px;
-    object-fit: contain;
+    width: 200px;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 50%;
     background: #f1f5f9;
     display: block;
+    margin: 30px auto 20px;
+    border: 5px solid #ffffff;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
 }
 
 .leadership-placeholder {
@@ -1758,3 +1800,50 @@ a {
     }
 
 }
+
+
+
+.founder-history-content {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+}
+
+.founder-history-image {
+    width: 140px;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 4px solid #ffffff;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+.founder-history-image-box {
+    flex-shrink: 0;
+}
+
+.founder-history-text {
+    flex: 1;
+}
+
+.founder-history-text h3 {
+    margin-top: 0;
+}
+
+@media (max-width: 600px) {
+    .founder-history-content {
+        flex-direction: column;
+        text-align: center;
+    }
+
+ .founder-history-image {
+    width: 140px;
+    height: 140px;
+    object-fit: contain;
+    border-radius: 50%;
+    background: #f1f5f9;
+    border: 4px solid #ffffff;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+}
+

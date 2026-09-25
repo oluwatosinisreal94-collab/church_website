@@ -5,8 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Church Leader - ECC Admin</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
@@ -216,9 +217,11 @@
             .main {
                 padding: 20px 15px;
             }
+
             .buttons {
                 flex-direction: column-reverse;
             }
+
             .btn {
                 width: 100%;
             }
@@ -241,59 +244,147 @@
 
         <div class="form-card">
 
-            <form action="/admin/leadership/edit/{{.ID}}" method="POST" enctype="multipart/form-data">
+            <form action="/admin/leadership/edit/{{.Leader.ID}}" method="POST" enctype="multipart/form-data">
 
                 <div class="form-group">
-                    <label><i class="fa-solid fa-user" style="color: #2563eb; margin-right: 6px;"></i> Full Name</label>
-                    <input type="text" name="name" value="{{.Name}}" placeholder="e.g. Prophet John Doe" required>
+
+                    <label>
+                        <i class="fa-solid fa-user" style="color: #2563eb; margin-right: 6px;"></i>
+                        Full Name
+                    </label>
+
+                    <input type="text" name="name" value="{{.Leader.Name}}" placeholder="e.g. Prophet John Doe"
+                        required>
+
                 </div>
 
+
                 <div class="form-group">
-                    <label><i class="fa-solid fa-id-badge" style="color: #2563eb; margin-right: 6px;"></i> Position</label>
+
+                    <label>
+                        <i class="fa-solid fa-id-badge" style="color: #2563eb; margin-right: 6px;"></i>
+                        Position
+                    </label>
+
                     <select name="position" required>
-                        <option value="Primate" {{if eq .Position "Primate"}}selected{{end}}>Primate</option>
-                        <option value="Reverend Mother" {{if eq .Position "Reverend Mother"}}selected{{end}}>Reverend Mother</option>
-                        <option value="Senior Prophet" {{if eq .Position "Senior Prophet"}}selected{{end}}>Senior Prophet</option>
-                        <option value="Prophet" {{if eq .Position "Prophet"}}selected{{end}}>Prophet</option>
-                        <option value="Prophetess" {{if eq .Position "Prophetess"}}selected{{end}}>Prophetess</option>
-                        <option value="Pastor" {{if eq .Position "Pastor"}}selected{{end}}>Pastor</option>
+
+                        <option value="Primate" {{if eq .Leader.Position "Primate" }}selected{{end}}>
+                            Primate
+                        </option>
+
+                        <option value="Reverend Mother" {{if eq .Leader.Position "Reverend Mother" }}selected{{end}}>
+                            Reverend Mother
+                        </option>
+
+                        <option value="Senior Prophet" {{if eq .Leader.Position "Senior Prophet" }}selected{{end}}>
+                            Senior Prophet
+                        </option>
+
+                        <option value="Prophet" {{if eq .Leader.Position "Prophet" }}selected{{end}}>
+                            Prophet
+                        </option>
+
+                        <option value="Prophetess" {{if eq .Leader.Position "Prophetess" }}selected{{end}}>
+                            Prophetess
+                        </option>
+
+                        <option value="Pastor" {{if eq .Leader.Position "Pastor" }}selected{{end}}>
+                            Pastor
+                        </option>
+
                     </select>
+
                 </div>
 
-                <div class="form-group">
-                    <label><i class="fa-solid fa-location-dot" style="color: #2563eb; margin-right: 6px;"></i> Branch</label>
-                    <input type="text" name="branch" value="{{.Branch}}" placeholder="e.g. Headquarters Branch" required>
-                </div>
 
                 <div class="form-group">
+
+                    <label>
+                        <i class="fa-solid fa-location-dot" style="color: #2563eb; margin-right: 6px;"></i>
+                        Branch
+                    </label>
+
+                    <select name="branch" class="form-control" required>
+
+                        <option value="">Select a Branch</option>
+
+                        {{range .Branches}}
+
+                        <option value="{{.Name}}">
+                            {{if eq .Name $.Leader.Branch}}selected{{end}}>
+                            {{.Name}}
+                        </option>
+
+                        {{end}}
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
                     <label>Current Photo</label>
-                    {{if .Image}}
+
+                    {{if .Leader.Image}}
+
                     <div class="image-preview-container">
-                        <img src="/images/{{.Image}}" alt="{{.Name}}" class="current-image">
+
+                        <img src="/images/{{.Leader.Image}}" alt="{{.Leader.Name}}" class="current-image">
+
                         <div class="image-info">
-                            <p>{{.Image}}</p>
-                            <span>Active leader photo profile</span>
+
+                            <p>{{.Leader.Image}}</p>
+
+                            <span>Active leader profile photo</span>
+
                         </div>
+
                     </div>
+
                     {{else}}
+
                     <div class="image-preview-container" style="justify-content: center; color: #64748b;">
-                        <i class="fa-solid fa-image" style="font-size: 24px; margin-right: 8px;"></i> No image uploaded yet.
+
+                        <i class="fa-solid fa-image" style="font-size: 24px; margin-right: 8px;"></i>
+
+                        No image uploaded yet.
+
                     </div>
+
                     {{end}}
+
                 </div>
 
+
                 <div class="form-group">
-                    <label><i class="fa-solid fa-upload" style="color: #2563eb; margin-right: 6px;"></i> Replace Image (Optional)</label>
+
+                    <label>
+                        <i class="fa-solid fa-upload" style="color: #2563eb; margin-right: 6px;"></i>
+                        Replace Image (Optional)
+                    </label>
+
                     <input type="file" name="image" accept="image/*">
+
                 </div>
+
 
                 <div class="buttons">
+
                     <a href="/admin/leadership" class="btn cancel-btn">
-                        <i class="fa-solid fa-xmark"></i> Cancel
+
+                        <i class="fa-solid fa-xmark"></i>
+                        Cancel
+
                     </a>
+
                     <button type="submit" class="btn save-btn">
-                        <i class="fa-solid fa-floppy-disk"></i> Save Changes
+
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        Save Changes
+
                     </button>
+
                 </div>
 
             </form>

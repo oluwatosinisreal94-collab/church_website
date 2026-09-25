@@ -413,6 +413,13 @@ func EditLeaderHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		branches, err := GetBranches()
+
+		if err != nil {
+			http.Error(w, "Failed to load branches", http.StatusInternalServerError)
+			return
+		}
+
 		templ, err := template.ParseFiles("admin-leadership-edit.html")
 
 		if err != nil {
@@ -420,10 +427,17 @@ func EditLeaderHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		err = templ.Execute(w, leader)
+		data := struct {
+			Leader   Leader
+			Branches []Branch
+		}{
+			Leader:   leader,
+			Branches: branches,
+		}
 
+		err = templ.Execute(w, data)
 		if err != nil {
-			http.Error(w, "Failed to display edit page", http.StatusInternalServerError)
+			fmt.Println("EDIT TEMPLATE ERROR:", err)
 			return
 		}
 

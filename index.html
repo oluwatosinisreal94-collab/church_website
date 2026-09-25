@@ -191,7 +191,38 @@
             </div>
 
 
-            <div class="timeline">
+            <div class="timeline-item">
+
+                <div class="timeline-year">1911</div>
+
+                <div class="timeline-card founder-history-card">
+
+                    <div class="founder-history-content">
+
+                        <div class="founder-history-image-box">
+                            <img src="/images/founders-image.png" alt="Primate (Dr.) Erastus Adeshina Oduneye"
+                                class="founder-history-image">
+                        </div>
+
+                        <div class="founder-history-text">
+
+                            <h3>The Birth of Our Founder</h3>
+
+                            <p>
+                                His Eminence Primate (Dr.) Erastus Adeshina
+                                Oduneye (J.P.) was born in June 1911 at Itun Oke –
+                                Agodi Ikala, Ijebu Mushin.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- <div class="timeline">
 
                 <div class="timeline-item">
 
@@ -209,7 +240,7 @@
 
                     </div>
 
-                </div>
+                </div> -->
 
 
                 <div class="timeline-item">
@@ -236,6 +267,11 @@
                     <div class="timeline-year">1956–1957</div>
 
                     <div class="timeline-card">
+
+                        <div class="founder-history-image-box">
+                            <img src="/images/founders-image.png" alt="Primate (Dr.) Erastus Adeshina Oduneye"
+                                class="founder-history-image">
+                        </div>
 
                         <h3>The Early Church</h3>
 
@@ -563,21 +599,20 @@
 
                     {{range .Branches}}
 
-                    
+
                     <div class="branch-card">
 
                         <img src="/images/{{.Image}}" alt="{{.Name}}" class="branch-image">
 
-                        <div class="branch-number">
-                            {{.Number}}
-                        </div>
+
 
                         <div class="branch-info">
 
                             <h4>{{.Name}}</h4>
 
                             <p>
-                                {{.Address}}
+                                <i class="fa-solid fa-location-dot"></i>
+                                Church Location: {{.Address}}
                             </p>
 
                             {{if .Pastor}}
@@ -587,7 +622,7 @@
 
                                 <div>
                                     <p>
-                                        <strong>Pastor:</strong> {{.Pastor}}
+                                        <strong>Prophet Name:</strong> {{.Pastor}}
                                     </p>
                                 </div>
 
@@ -596,14 +631,14 @@
 
                             {{if .Phone}}
                             <p>
-                                <strong>Phone:</strong> {{.Phone}}
+                                <strong>Phone Number:</strong> {{.Phone}}
                             </p>
                             {{end}}
 
                         </div>
 
                     </div>
-                                        {{end}}
+                    {{end}}
 
 
 
@@ -738,68 +773,65 @@
 
 
     <!-- Leadership Section -->
-<section class="leadership-section" id="leadership">
+    <section class="leadership-section" id="leadership">
 
-    <div class="section-header">
+        <div class="section-header">
 
-        <span class="section-label">Our Leadership</span>
+            <span class="section-label">Our Leadership</span>
 
-        <h2>Meet Our Church Leaders</h2>
+            <h2>Meet Our Church Leaders</h2>
 
-        <p>
-            Meet the prophets, prophetesses and pastors serving
-            Ebenezer Christ Church of the Lord.
-        </p>
+            <p>
+                Meet the prophets, prophetesses and pastors serving
+                Ebenezer Christ Church of the Lord.
+            </p>
 
-    </div>
+        </div>
 
-    {{if .Leaders}}
+        {{if .Leaders}}
 
-    <div class="leadership-grid">
+        <div class="leadership-grid">
 
-        {{range .Leaders}}
+            {{range .Leaders}}
 
-        <div class="leadership-card">
+            <div class="leadership-card">
 
-            {{if .Image}}
+                {{if .Image}}
 
-            <img
-                src="/images/{{.Image}}"
-                alt="{{.Name}}"
-                class="leadership-image">
+                <img src="/images/{{.Image}}" alt="{{.Name}}" class="leadership-image">
 
-            {{else}}
+                {{else}}
 
-            <div class="leadership-image leadership-placeholder">
-                <i class="fa-solid fa-user"></i>
+                <div class="leadership-image leadership-placeholder">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+
+                {{end}}
+
+                <div class="leadership-content">
+
+                    <h3>{{.Name}}</h3>
+
+                    <p class="leadership-position">
+                        {{.Position}}
+                    </p>
+
+                    <p class="leadership-branch">
+                        <i class="fa-solid fa-location-dot"></i>
+                        {{.Branch}}
+                    </p>
+
+                </div>
+
             </div>
 
             {{end}}
-
-            <div class="leadership-content">
-
-                <h3>{{.Name}}</h3>
-
-                <p class="leadership-position">
-                    {{.Position}}
-                </p>
-
-                <p class="leadership-branch">
-                    <i class="fa-solid fa-location-dot"></i>
-                    {{.Branch}}
-                </p>
-
-            </div>
 
         </div>
 
         {{end}}
 
-    </div>
-
-    {{end}}
-
-</section>
+    </section>
 
 
     <!-- ================= EVENTS ================= -->
@@ -928,7 +960,7 @@
         </div>
 
     </section>
-    
+
 
 
     <!-- ================= SERMONS ================= -->
