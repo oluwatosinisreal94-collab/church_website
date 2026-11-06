@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"io"
 	"path/filepath"
+	"strconv"
 
 	// "internal/runtime/gc/scan"
 	"log"
@@ -15,7 +16,12 @@ import (
 	"sync"
 	"time"
 
+	"encoding/json"
+
 	"database/sql"
+
+	"crypto/rand"
+	"encoding/hex"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
@@ -151,6 +157,23 @@ type Message struct {
 
 type MessagesData struct {
 	Messages []Message
+}
+
+type supportConversations struct {
+	ID          int
+	VisitorID   string
+	VisitorName string
+	Status      string
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+}
+
+type SupportMessage struct {
+	ID             int
+	ConversationID int
+	Sender         string
+	Message        string
+	CreatedAt      time.Time
 }
 
 type Branch struct {
@@ -677,7 +700,49 @@ type BranchDisplay struct {
 	PastorImage string
 }
 
+func generateVisitorID() (string, error) {
+	bytes := make([]byte, 16)
+	_, err := rand.Read(bytes)
+	if err != nil {
+		return "", err
+	}
+	return hex.EncodeToString(bytes), nil
+}
+
+func getOrCreateVisitorID(w http.ResponseWriter, r *http.Request) (string, error) {
+	cookie, err := r.Cookie("visitor_id")
+
+	if err == nil && cookie.Value != "" {
+		return cookie.Value, nil
+	}
+
+	visitorID, err := generateVisitorID()
+	if err != nil {
+		return "", err
+	}
+
+	http.SetCookie(w, &http.Cookie{
+		Name:     "visitor_id",
+		Value:    visitorID,
+		Path:     "/",
+		HttpOnly: true,
+		SameSite: http.SameSiteLaxMode,
+		MaxAge:   60 * 60 * 24 * 365,
+		Secure:   r.TLS != nil,
+	})
+
+	return visitorID, nil
+}
+
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
+
+	visitorID, err := getOrCreateVisitorID(w, r)
+	if err != nil {
+		http.Error(w, "Unable to create visitor ID", http.StatusInternalServerError)
+		return
+	}
+
+	_ = visitorID
 
 	events, err := GetEvents()
 	if err != nil {
@@ -771,6 +836,379 @@ func ContactHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
+func StartSupportHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	visitorID, err := getOrCreateVisitorID(w, r)
+	if err != nil {
+		http.Error(w, "Unable to identify visitor", http.StatusInternalServerError)
+		return
+	}
+
+	var request struct {
+		VisitorName string `json:"visitor_name"`
+	}
+
+	err = json.NewDecoder(r.Body).Decode(&request)
+	if err != nil {
+		http.Error(w, "Invalid Request", http.StatusBadRequest)
+		return
+	}
+
+	request.VisitorName = strings.TrimSpace(request.VisitorName)
+
+	if request.VisitorName == "" || len(request.VisitorName) > 100 {
+		http.Error(w, "Please provide a name (maximum 100 characters)", http.StatusBadRequest)
+		return
+	}
+
+	result, err := db.Exec("INSERT INTO support_conversations (visitor_id , visitor_name , status  ) VALUES(? , ? ,? )",
+		visitorID,
+		request.VisitorName,
+		"open",
+	)
+
+	if err != nil {
+		http.Error(w, "Unable to start conversation", http.StatusInternalServerError)
+		return
+	}
+
+	conversationID, err := result.LastInsertId()
+
+	if err != nil {
+		http.Error(w, "Unable to retrieve conversation ID", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"success":         true,
+		"conversation_id": conversationID,
+		"message":         "Support conversation started",
+	})
+}
+
+func SendSupportMessageHandler(w http.ResponseWriter, r *http.Request) {
+
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	visitorCookie, err := r.Cookie("visitor_id")
+
+	if err != nil || visitorCookie.Value == "" {
+		http.Error(w, "Visitor identity not found", http.StatusUnauthorized)
+		return
+	}
+
+	var request struct {
+		ConversationID int    `json:"conversation_id"`
+		Message        string `json:"message"`
+	}
+
+	err = json.NewDecoder(r.Body).Decode(&request)
+
+	if err != nil {
+		http.Error(w, "Invalid request", http.StatusBadRequest)
+		return
+	}
+
+	request.Message = strings.TrimSpace(request.Message)
+	if request.ConversationID <= 0 || request.Message == "" {
+		http.Error(w, "Conversation ID and message are required", http.StatusBadRequest)
+		return
+	}
+
+	var conversationID int
+
+	err = db.QueryRow(
+		"SELECT id FROM support_conversations WHERE id = ? AND visitor_id = ? AND status = 'open'",
+		request.ConversationID,
+		visitorCookie.Value,
+	).Scan(&conversationID)
+
+	if err == sql.ErrNoRows {
+		http.Error(w, "Conversation not found or access denied", http.StatusForbidden)
+		return
+	}
+
+	if err != nil {
+		http.Error(w, "Unable to verify conversation", http.StatusInternalServerError)
+		return
+	}
+
+	_, err = db.Exec(
+		"INSERT INTO support_messages (conversation_id, sender, message) VALUES (?, ?, ?)",
+		conversationID,
+		"visitor",
+		request.Message,
+	)
+
+	if err != nil {
+		http.Error(w, "Unable to send message", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"success": true,
+		"message": "Message sent successfully",
+	})
+}
+
+func GetSupportMessagesHandler(w http.ResponseWriter, r *http.Request) {
+
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	conversationID := r.URL.Query().Get("id")
+
+	if conversationID == "" {
+		http.Error(w, "Conversation ID is required", http.StatusBadRequest)
+		return
+	}
+
+	id, err := strconv.Atoi(conversationID)
+
+	if err != nil || id <= 0 {
+		http.Error(w, "Invalid conversation ID", http.StatusBadRequest)
+		return
+	}
+
+	isAdmin := IsAdminLoggedIn(r)
+
+	var ownerVisitorID string
+
+	err = db.QueryRow(
+		"SELECT visitor_id FROM support_conversations WHERE id = ?",
+		id,
+	).Scan(&ownerVisitorID)
+
+	if err == sql.ErrNoRows {
+		http.Error(w, "Conversation not found", http.StatusNotFound)
+		return
+	}
+
+	if err != nil {
+		http.Error(w, "Unable to find conversation", http.StatusInternalServerError)
+		return
+	}
+
+	if !isAdmin {
+		visitorCookie, err := r.Cookie("visitor_id")
+
+		if err != nil || visitorCookie.Value != ownerVisitorID {
+			http.Error(w, "Access denied", http.StatusForbidden)
+			return
+		}
+	}
+
+	rows, err := db.Query(
+		"SELECT id, sender, message, created_at FROM support_messages WHERE conversation_id = ? ORDER BY id ASC",
+		id,
+	)
+
+	if err != nil {
+		http.Error(w, "Unable to retrieve messages", http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+
+	type SupportMessage struct {
+		ID        int    `json:"id"`
+		Sender    string `json:"sender"`
+		Message   string `json:"message"`
+		CreatedAt string `json:"created_at"`
+	}
+
+	messages := []SupportMessage{}
+
+	for rows.Next() {
+		var msg SupportMessage
+
+		err := rows.Scan(
+			&msg.ID,
+			&msg.Sender,
+			&msg.Message,
+			&msg.CreatedAt,
+		)
+
+		if err != nil {
+			log.Printf("Support message scan error: %v", err)
+			http.Error(w, "Unable to read messages", http.StatusInternalServerError)
+			return
+		}
+
+		messages = append(messages, msg)
+	}
+
+	if err = rows.Err(); err != nil {
+		http.Error(w, "Error reading messages", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"success":  true,
+		"messages": messages,
+	})
+}
+
+func AdminSupportInboxHandler(w http.ResponseWriter, r *http.Request) {
+
+	// fmt.Println("ADMIN SUPPORT HANDLER REACHED")
+
+	if !IsAdminLoggedIn(r) {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	rows, err := db.Query(`
+    SELECT id, visitor_name, status, created_at
+    FROM support_conversations
+    ORDER BY updated_at DESC
+`)
+
+	if err != nil {
+		http.Error(w, "Unable to retrieve conversations", http.StatusInternalServerError)
+		return
+	}
+
+	defer rows.Close()
+
+	type SupportConversation struct {
+		ID          int    `json:"id"`
+		VisitorName string `json:"visitor_name"`
+		Status      string `json:"status"`
+		CreatedAt   string `json:"created_at"`
+	}
+
+	conversations := []SupportConversation{}
+
+	for rows.Next() {
+		var conversation SupportConversation
+
+		err := rows.Scan(
+			&conversation.ID,
+			&conversation.VisitorName,
+			&conversation.Status,
+			&conversation.CreatedAt,
+		)
+
+		if err != nil {
+			http.Error(w, "Unable to read conversations", http.StatusInternalServerError)
+			return
+		}
+
+		conversations = append(conversations, conversation)
+	}
+
+	if err = rows.Err(); err != nil {
+		http.Error(w, "Error reading conversations", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"success":       true,
+		"conversations": conversations,
+	})
+}
+
+func AdminSendSupportMessageHandler(w http.ResponseWriter, r *http.Request) {
+
+	if !IsAdminLoggedIn(r) {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var request struct {
+		ConversationID int    `json:"conversation_id"`
+		Message        string `json:"message"`
+	}
+
+	err := json.NewDecoder(r.Body).Decode(&request)
+
+	if err != nil {
+		http.Error(w, "Invalid request", http.StatusBadRequest)
+		return
+	}
+
+	request.Message = strings.TrimSpace(request.Message)
+
+	if request.ConversationID <= 0 || request.Message == "" {
+		http.Error(w, "Conversation ID and message are required", http.StatusBadRequest)
+		return
+	}
+
+	var conversationID int
+
+	err = db.QueryRow(
+		"SELECT id FROM support_conversations WHERE id = ? AND status = 'open'",
+		request.ConversationID,
+	).Scan(&conversationID)
+
+	if err == sql.ErrNoRows {
+		http.Error(w, "Conversation not found or closed", http.StatusNotFound)
+		return
+	}
+
+	if err != nil {
+		http.Error(w, "Unable to verify conversation", http.StatusInternalServerError)
+		return
+	}
+
+	_, err = db.Exec(
+		"INSERT INTO support_messages (conversation_id, sender, message) VALUES (?, ?, ?)",
+		conversationID,
+		"admin",
+		request.Message,
+	)
+
+	if err != nil {
+		http.Error(w, "Unable to send admin message", http.StatusInternalServerError)
+		return
+	}
+
+	_, err = db.Exec(
+		"UPDATE support_conversations SET updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+		conversationID,
+	)
+
+	if err != nil {
+		http.Error(w, "Unable to update conversation", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"success": true,
+		"message": "Admin message sent successfully",
+	})
+
+}
+
 func AiHandler(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method != http.MethodPost {
@@ -787,7 +1225,7 @@ func AiHandler(w http.ResponseWriter, r *http.Request) {
 	// Generate content using Gemini API (SDK v1.71.0)
 	result, err := geminiClient.Models.GenerateContent(
 		ctx,
-		"gemini-3.6-flash",
+		"gemini-3.5-flash",
 		genai.Text(question),
 		&genai.GenerateContentConfig{
 			SystemInstruction: genai.NewContentFromText(
@@ -1799,6 +2237,11 @@ func main() {
 	// 3. Register routes and static file handlers
 	http.HandleFunc("/admin", AdminDashboardHandler)
 	http.HandleFunc("/ai", AiHandler)
+	http.HandleFunc("/support/start", StartSupportHandler)
+	http.HandleFunc("/support/send", SendSupportMessageHandler)
+	http.HandleFunc("/support/messages", GetSupportMessagesHandler)
+	http.HandleFunc("/admin/support", AdminSupportInboxHandler)
+	http.HandleFunc("/admin/support/send", AdminSendSupportMessageHandler)
 	http.HandleFunc("/admin/login", AdminLoginHandler)
 	http.HandleFunc("/", HomeHandler)
 	http.HandleFunc("/contact", ContactHandler)
